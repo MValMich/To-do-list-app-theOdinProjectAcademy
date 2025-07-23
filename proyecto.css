@@ -1,0 +1,12 @@
+/* PROYECTO.JS */
+
+.div-project {
+    border: solid 1px blueviolet;
+    width: 400px;
+    height: 200px;
+    /* justify-items: center; */
+}
+.div-inp-project {
+    border: solid 1px grey;
+}
+

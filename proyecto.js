@@ -1,143 +1,114 @@
-// PROYECTO.JS
 
 // DOM
 // button: crear proyecto
-const btnNewProject = document.querySelector('#btn-new-project')
+const btnNewProject = document.querySelector('#btn-new-project');
+
 // dialog/form: proyecto
-const dialogProject = document.querySelector('#dialog-project')
-const formProject = document.querySelector('#form-project')
-const inpTitleProject = document.querySelector('#inp-title-project')
-const btnSubmitProject = document.querySelector('#btn-submit-project')
+const dialogProject = document.querySelector('#dialog-project');
+const formProject = document.querySelector('#form-project');
+const inpTitleProject = document.querySelector('#inp-title-project');
+const btnSubmitProject = document.querySelector('#btn-submit-project');
+
 // dialog/form: tarea
-const dialogTarea = document.querySelector('#dialog-tarea')
-const formTarea = document.querySelector('#form-tarea')
-const inpTitleTarea = document.querySelector('#inp-title-tarea')
-const btnSubmitTarea = document.querySelector('#btn-submit-tarea')
+const dialogTarea = document.querySelector('#dialog-tarea');
+const formTarea = document.querySelector('#form-tarea');
+const inpTitleTarea = document.querySelector('#inp-title-tarea');
+const btnSubmitTarea = document.querySelector('#btn-submit-tarea');
 // div: mis-proyectos
-const misProyectos = document.querySelector('#div-mis-proyectos')
-      
-// crear nuevo proyecto
-btnNewProject.addEventListener('click', (event)=>{
-    event.preventDefault()
-    dialogProject.showModal()
-})
+const misProyectos = document.querySelector('#div-mis-proyectos');
+
+// Variable para guardar la referencia al proyecto activo
+let proyectoActual = null;
+
+// CREAR NUEVO PROYECTO
+// abrir dialogo proyecto
+btnNewProject.addEventListener('click', (event) => {
+    event.preventDefault();
+    dialogProject.showModal();
+});
+
 // subir nuevo proyecto
-btnSubmitProject.addEventListener('click',(event)=>{
-    event.preventDefault()
-    const divProject = document.createElement('div')
-    divProject.classList.add('div-project')
-
-    const divInpTitleProject = document.createElement('div')
-    divInpTitleProject.classList.add('div-inp-project')
-    divInpTitleProject.textContent = 'Proyecto: '+ inpTitleProject.value.replace(/[<>{}()'"&%\-=:#?|]/gi,"");
-    // crear tarea
-    const divBtnProject = document.createElement('div')
-    const btnCrearTarea = document.createElement('button')
-    btnCrearTarea.textContent = 'crear Tarea'
-    btnCrearTarea.addEventListener('click', ()=>{
-        dialogTarea.showModal()
-    })
+btnSubmitProject.addEventListener('click', (event) => {
+    event.preventDefault();
     
-    divBtnProject.append(btnCrearTarea)
-    divProject.append(divInpTitleProject, divBtnProject)
-    misProyectos.append(divProject)
+    // Prevenir la creación de proyectos sin título
+    if (inpTitleProject.value.trim() === '') {
+        alert('Por favor, ingresa un título para el proyecto.');
+        return; // Detiene la ejecución si el título está vacío
+    }
+
+    const divProject = document.createElement('div');
+    divProject.classList.add('div-project');
+
+    const divInpTitleProject = document.createElement('div');
+    divInpTitleProject.classList.add('div-inp-project');
+    divInpTitleProject.textContent = 'Proyecto: ' + inpTitleProject.value.replace(/[<>{}()'"&%\-=:#?|]/gi, "");
+
+    // Borrar proyecto
+    const BtnborrarProyecto = document.createElement('button');
+    BtnborrarProyecto.textContent = 'Borrar Proyecto';
+    BtnborrarProyecto.addEventListener('click', () => { divProject.remove() });
+    divInpTitleProject.append(BtnborrarProyecto);
+
+    // Crear el contenedor de tareas (con scroll)
+const contenedorTareas = document.createElement('div');
+contenedorTareas.classList.add('contenedor-tareas');
+
+
+    // CREAR TAREA
+    // dialogo tarea
+    const divBtnProject = document.createElement('div');
+    const btnCrearTarea = document.createElement('button');
+    btnCrearTarea.textContent = 'Crear Tarea';
+    btnCrearTarea.addEventListener('click', () => {
+        // Antes de abrir el diálogo, guardamos este proyecto como el "actual"
+        proyectoActual = divProject; 
+        dialogTarea.showModal();
+    });
     
-    dialogProject.close()
+    divBtnProject.append(btnCrearTarea);
+    divProject.append(divInpTitleProject, divBtnProject);
+    misProyectos.append(divProject);
 
-    // subir tarea 
-btnSubmitTarea.addEventListener('click', (event)=>{
-    event.preventDefault()
-    const divTarea = document.createElement('div')
-    const divInpTitleTarea = document.createElement('div')
-    divInpTitleTarea.classList.add('div-inp-tarea')
-    divInpTitleTarea.textContent = 'Titulo: '+ inpTitleTarea.value.replace(/[<>{}()'"&%\-=:#?|]/gi,"");
+    dialogProject.close();
+
+    // <-- CORRECCIÓN: Limpia el formulario del proyecto para el siguiente uso.
+    formProject.reset();
+});
+
+// CREAR TAREA
+// subir tarea (El listener se define UNA SOLA VEZ, fuera del creador de proyectos)
+btnSubmitTarea.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    // Si no hay un proyecto activo, no hacemos nada (seguridad)
+    if (!proyectoActual) return; 
+
+    // Prevenir la creación de tareas sin título
+    if (inpTitleTarea.value.trim() === '') {
+        alert('Por favor, ingresa un título para la tarea.');
+        return; // Detiene la ejecución si el título está vacío
+    }
+
+    const divTarea = document.createElement('div');
+    const divInpTitleTarea = document.createElement('div');
+    divInpTitleTarea.classList.add('div-inp-tarea');
+    divInpTitleTarea.textContent = 'Titulo: ' + inpTitleTarea.value.replace(/[<>{}()'"&%\-=:#?|]/gi, "");
+
+    // Borrar tarea 
+    const btnBorrarTarea = document.createElement('button');
+    btnBorrarTarea.textContent = 'Borrar Tarea';
+    btnBorrarTarea.addEventListener('click', () => { divTarea.remove() });
+
+    divInpTitleTarea.append(btnBorrarTarea);
+    divTarea.append(divInpTitleTarea);
     
-    divTarea.append(divInpTitleTarea)
-    divProject.append(divInpTitleTarea)
+    // Añadimos la tarea al proyecto que guardamos en la variable 'proyectoActual'
+    proyectoActual.append(divTarea);
+
+    dialogTarea.close();
     
-    dialogTarea.close()
-})
-})
-// // subir tarea 
-// btnSubmitTarea.addEventListener('click', (event)=>{
-//     event.preventDefault()
-//     // const divTarea = document.createElement('div')
-//     // divTarea.classList.add('div-tarea')
-
-//     const divInpTitleTarea = document.createElement('div')
-//     divInpTitleTarea.classList.add('div-inp-title')
-//     divInpTitleTarea.textContent = 'Titulo: '+ inpTitleTarea.value.replace(/[&<>'"{}]/gi,"")
-// divProject.append(divInpTitleTarea)
-// // alert('hola')
-// })
-
-
-
-
-// // JS: Proyecto-Libreria
-// const formulario = document.querySelector('#formulario');
-// const dialog = document.querySelector('dialog');
-// const idTitulo = document.querySelector('#id-titulo');
-// const idAutor = document.querySelector('#id-autor');
-// const idPaginas = document.querySelector('#id-paginas');
-// const idLeido = document.querySelector('#id-leido');
-// const formBtn = document.querySelector('#form-btn');
-// const container = document.querySelector('#container');
-// const miLibreria = [];
-
-// function Libro(titulo, autor, paginas, leido) {
-//     this.titulo = titulo;
-//     this.autor = autor;
-//     this.paginas = paginas;
-//     this.leido = leido ? 'Leído' : 'No leído';
-//     this.info = function() {
-//         return 'Título: ' + this.titulo + ' / ' +' Autor: ' + this.autor + ' / ' +' Páginas: ' + this.paginas + ' / ' +' Estado: ' + this.leido;
-//     };
-// }
-
-// function añadirLibroLibreia() {
-//     const titulo = idTitulo.value.replace(/[&<>'"]/gi,"");
-//     const autor = idAutor.value.replace(/[&<>'"]/gi,"");
-//     const paginas = idPaginas.value.replace(/[&<>'"]/gi,"");
-//     const leido = idLeido.checked;
-//     const nuevoLibro = new Libro(titulo, autor, paginas, leido);
-//     miLibreria.push(nuevoLibro);
-//     mostrarLibroPatalla(nuevoLibro);
-// }
-
-// // FORMULARIO
-// function desplegarFormulario() {
-//     formBtn.addEventListener('click', () => {
-//         dialog.showModal();
-//     });
-// }
-// desplegarFormulario();
-// 'Subir'
-// formulario.addEventListener('submit', (event) => {
-//     event.preventDefault();
-//     añadirLibroLibreia();
-//     dialog.close();
-// });
-// 'Cerrar'
-// const cerrarBtn = document.querySelector('#cerrar-btn')
-// cerrarBtn.addEventListener('click', (event) => {
-//     event.preventDefault();
-//     dialog.close();
-// });
-
-// // CREAR NUEVO LIBRO
-// function mostrarLibroPatalla(libro) {
-//     const content = document.createElement('div');
-//     content.classList.add('class-content');
-//     content.textContent = libro.info();
-//     container.appendChild(content);
-
-//     const borrarLibroBtn = document.createElement('button')
-//     borrarLibroBtn.classList.add('borrar-btn')
-//     borrarLibroBtn.textContent = 'Borrar'
-//     content.appendChild(borrarLibroBtn);
-//     'borrar'
-//  borrarLibroBtn.addEventListener('click', () => {
-//         container.removeChild(content);
-//     });
-// }
+    // Limpiamos el formulario y la variable para la próxima vez
+    formTarea.reset(); 
+    proyectoActual = null; 
+});
